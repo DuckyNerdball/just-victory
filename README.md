@@ -10,6 +10,27 @@ Licensed GPL-3.0-or-later, as upstream.
 copy of the game. Not affiliated with or endorsed by the game's developer or
 publisher. Developed with AI assistance ([Claude Code](https://claude.com/claude-code)).
 
+## Quick start (measured settings)
+
+Build (see [CONTRIBUTING.md](CONTRIBUTING.md)), copy `victory.example.toml` to
+`victory.toml`, point `game_dir` at your own copy of the game, then:
+
+```powershell
+$env:VICTORY_LATE_WAIT = '3'
+$env:VICTORY_WIDE_BACK = '1'
+$env:VICTORY_CARD_BUFFERS_MIN_MB = '1'
+$env:VICTORY_CARD_BUFFERS_MB = '1024'
+targeteleaseictory.exe run <game dir>\<the title's exe> --execute
+```
+
+On an RTX 5070 Ti these settings take the world from 681 to 301 ms per frame
+(1.5 to 3.3 fps) with no device removal ([#3](https://github.com/justrealyme/just-victory/issues/3);
+results from other GPUs wanted). The first run translates shaders as they are
+first used, so it starts slower; later runs use the cache.
+
+**Help wanted:** run reports from any GPU (an issue form, no coding needed),
+and pull requests; see [CONTRIBUTING.md](CONTRIBUTING.md) and the open issues.
+
 Below is victory-fork's own README, unchanged.
 
 ---
