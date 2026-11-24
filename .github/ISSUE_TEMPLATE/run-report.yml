@@ -1,0 +1,49 @@
+name: Run report or bug
+description: How far the game got on your machine, or a crash or GPU hang
+labels: ["run report"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        No game data here: no screenshots or videos of the game, no shader dumps, no strings from the executable (docs/asset-policy.md). Logs with hashes, offsets and error messages are fine.
+  - type: input
+    id: commit
+    attributes:
+      label: just-victory commit
+      placeholder: e.g. 0fc1334
+    validations:
+      required: true
+  - type: input
+    id: gpu
+    attributes:
+      label: GPU and driver version
+      placeholder: e.g. RTX 5070 Ti, 621.40
+    validations:
+      required: true
+  - type: dropdown
+    id: build
+    attributes:
+      label: Build
+      options:
+        - release
+        - diag (diagnostics feature)
+    validations:
+      required: true
+  - type: textarea
+    id: result
+    attributes:
+      label: What happened
+      description: How far it got (menus, cutscene, world), for how long, frame time, and what went wrong.
+    validations:
+      required: true
+  - type: textarea
+    id: log
+    attributes:
+      label: Relevant log lines
+      description: For a GPU hang, the "device removed" line and its DRED breadcrumbs (VICTORY_D3D12_DRED=1 with a diag build).
+      render: text
+  - type: input
+    id: settings
+    attributes:
+      label: Environment switches used
+      placeholder: e.g. VICTORY_RELAY=2 VICTORY_SHADER_LOOP_LIMIT=1024
