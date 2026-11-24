@@ -1,3 +1,19 @@
+# just-victory
+
+A personal working copy built on [victory-fork](https://github.com/fxceless/victory-fork)
+(fxceless), itself a fork of [VIctory](https://github.com/Marvisak/VIctory) by
+Marvisak and contributors. Fixes from upstream VIctory and from other forks are
+brought in here as they appear, with their authors credited in the commits.
+Licensed GPL-3.0-or-later, as upstream.
+
+**No game files, code or assets are in this repository.** You need your own
+copy of the game. Not affiliated with or endorsed by the game's developer or
+publisher. Developed with AI assistance ([Claude Code](https://claude.com/claude-code)).
+
+Below is victory-fork's own README, unchanged.
+
+---
+
 # VIctory fork (work in progress)
 
 A work-in-progress fork of [VIctory](https://github.com/Marvisak/VIctory), a
