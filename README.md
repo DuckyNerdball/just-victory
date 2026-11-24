@@ -25,8 +25,16 @@ targeteleaseictory.exe run <game dir>\<the title's exe> --execute
 
 On an RTX 5070 Ti these settings take the world from 681 to 301 ms per frame
 (1.5 to 3.3 fps) with no device removal ([#3](https://github.com/justrealyme/just-victory/issues/3);
-results from other GPUs wanted). The first run translates shaders as they are
-first used, so it starts slower; later runs use the cache.
+results from other GPUs wanted). To avoid a first run that shows black screens
+while shaders translate, warm the cache once (a few minutes; again only after
+the shader translator itself changes, not after every rebuild):
+
+```powershell
+targeteleaseictory.exe translate --cache <game dir>
+```
+
+Run it with the same `VICTORY_*` translation switches you play with (for
+example `VICTORY_SHADER_LOOP_LIMIT`), since they are part of the cache key.
 
 **Help wanted:** run reports from any GPU (an issue form, no coding needed),
 and pull requests; see [CONTRIBUTING.md](CONTRIBUTING.md) and the open issues.
