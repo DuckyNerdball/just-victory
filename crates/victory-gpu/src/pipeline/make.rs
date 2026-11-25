@@ -132,6 +132,11 @@ pub(crate) fn ready(p: &Arc<Pending>) -> Option<&HostPipeline> {
 
 /// Makes `p` on this thread if it is not made yet (waiting for a worker
 /// that is making it); whether it has a host pipeline.
+/// Its shaders, for logs (`compute 1234abcd...`).
+pub(crate) fn names(p: &Pending) -> String {
+    p.shaders.iter().map(|s| format!("{} {}", s.stage, s.hash)).collect::<Vec<_>>().join(" + ")
+}
+
 pub(crate) fn now(p: &Arc<Pending>) -> bool {
     p.make();
     p.made.get().is_some_and(|made| made.is_some())
