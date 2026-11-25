@@ -2490,6 +2490,8 @@ impl Shadow {
                 // stretch is the title's as read, and a title write landing
                 // there since stays.
                 for &(off, len) in &runs {
+                    #[cfg(feature = "diagnostics")]
+                    back_log(start + at + off, &title[off..off + len], self.window);
                     crate::host::write_mapped((start + at + off) as *mut u8, title[off..].as_ptr(), len);
                     written += len;
                 }
@@ -2583,6 +2585,8 @@ impl Shadow {
         }
         crate::watch::writing(start + at, n);
         merge_race(as_read.as_deref(), (self.start, self.len), start + at, &title[..], "pc relay");
+        #[cfg(feature = "diagnostics")]
+        back_log(start + at, &title[..n], self.window);
         crate::host::write_mapped((start + at) as *mut u8, title.as_ptr(), n);
         n
     }
@@ -3203,7 +3207,9 @@ impl Shadow {
             if differs != 0 {
                 crate::watch::writing(start + at, n);
                 merge_race(as_read.as_deref(), (self.start, self.len), start + at, &title[..], "card");
-                crate::host::write_mapped((start + at) as *mut u8, title.as_ptr(), n);
+                #[cfg(feature = "diagnostics")]
+        back_log(start + at, &title[..n], self.window);
+        crate::host::write_mapped((start + at) as *mut u8, title.as_ptr(), n);
                 written = n;
             }
         } else {
@@ -3282,6 +3288,8 @@ impl Shadow {
         }
         crate::watch::writing(start + at, n);
         merge_race(as_read.as_deref(), (self.start, self.len), start + at, &title[..], "card relay");
+        #[cfg(feature = "diagnostics")]
+        back_log(start + at, &title[..n], self.window);
         crate::host::write_mapped((start + at) as *mut u8, title.as_ptr(), n);
         n
     }
@@ -3996,4 +4004,23 @@ pub(crate) fn near(va: u64) -> String {
         ));
     }
     text
+}
+
+/// `VICTORY_BACK_LOG=1` (diagnostics): every stretch shaders wrote into
+/// memory outside buffers (a window), as it is put back into title memory:
+/// its address, length and first bytes. For finding stores that land on
+/// the title's own objects (the ray-tracing structure builder, issue #4).
+#[cfg(feature = "diagnostics")]
+fn back_log(address: usize, bytes: &[u8], window: bool) {
+    use std::sync::atomic::AtomicU32;
+    static ON: std::sync::OnceLock<bool> = std::sync::OnceLock::new();
+    static LINES: AtomicU32 = AtomicU32::new(0);
+    if !*ON.get_or_init(|| std::env::var_os("VICTORY_BACK_LOG").is_some_and(|v| v == "1")) {
+        return;
+    }
+    if !crate::pipeline::BUILDER_STARTED.load(Ordering::Relaxed) || LINES.fetch_add(1, Ordering::Relaxed) >= 400_000 {
+        return;
+    }
+    let head: String = bytes.iter().take(16).map(|b| format!("{b:02x}")).collect();
+    tracing::info!("write-back {address:#x}+{:#x} window={window} {head}", bytes.len());
 }

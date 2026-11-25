@@ -311,8 +311,13 @@ pub(crate) fn builder_runs() -> bool {
         "the ray-tracing structure builder runs: all of its programs have host pipelines"
     );
     b.whole = true;
+    BUILDER_STARTED.store(true, std::sync::atomic::Ordering::Relaxed);
     true
 }
+
+/// The structure builder has run (for diagnostics that look at what it does).
+#[cfg(windows)]
+pub(crate) static BUILDER_STARTED: std::sync::atomic::AtomicBool = std::sync::atomic::AtomicBool::new(false);
 
 /// Whether a console program can store to buffer memory: it has a buffer,
 /// typed-buffer, scalar-memory, flat or global store or atomic, or code
