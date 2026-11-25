@@ -36,6 +36,19 @@ fn host_gpu_failed(what: &str) -> ! {
     unreachable!("the process has ended")
 }
 
+/// The offline warm-up: see `victory_gpu::shader_cache::warm`.
+pub fn warm_shader(container: &[u8]) -> Result<bool, String> {
+    #[cfg(windows)]
+    {
+        victory_gpu::shader_cache::warm(container)
+    }
+    #[cfg(not(windows))]
+    {
+        let _ = container;
+        Err("no shader cache on this host".into())
+    }
+}
+
 /// Keeps the host's translations of the title's shaders in `dir` (a
 /// folder of the cache) across runs, and its compiled pipelines beside it
 /// (`pipelines`).
@@ -50,11 +63,11 @@ pub fn use_shader_cache(dir: std::path::PathBuf) {
 }
 
 /// The warm-up: translates `container` into the shader cache set with
-/// [`use_shader_cache`], as a run would (see `victory_gpu::shader_cache::warm`).
+/// [`use_shader_cache`], as a run would (see `victory_gpu::shader_cache::warm_by_run`).
 /// Whether it translates; `None` without a host GPU build.
-pub fn warm_shader(container: &[u8]) -> Option<bool> {
+pub fn warm_shader_by_run(container: &[u8]) -> Option<bool> {
     #[cfg(windows)]
-    return Some(victory_gpu::shader_cache::warm(container));
+    return Some(victory_gpu::shader_cache::warm_by_run(container));
     #[cfg(not(windows))]
     {
         let _ = container;
